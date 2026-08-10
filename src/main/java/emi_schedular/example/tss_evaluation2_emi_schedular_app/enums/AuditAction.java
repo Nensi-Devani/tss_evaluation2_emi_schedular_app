@@ -1,0 +1,32 @@
+package emi_schedular.example.tss_evaluation2_emi_schedular_app.enums;
+
+public enum AuditAction {
+
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    LOGOUT,
+
+    OTP_REQUESTED,
+    OTP_VERIFIED,
+    OTP_FAILED,
+
+    LOAN_CREATED,
+    LOAN_APPROVED,
+    LOAN_REJECTED,
+    LOAN_CLOSED,
+
+    STRATEGY_SUGGESTED,
+    STRATEGY_OVERRIDDEN,
+
+    EMI_MARKED_PAID,
+    EMI_MARKED_OVERDUE,
+
+    EMAIL_SENT,
+
+    PASSWORD_RESET,
+
+    USER_BLOCKED,
+    USER_UNBLOCKED,
+
+    CONFIGURATION_UPDATED
+}
