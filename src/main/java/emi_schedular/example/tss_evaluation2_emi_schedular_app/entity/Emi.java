@@ -65,6 +65,6 @@ public class Emi extends BaseEntity{
     @Column(name = "paid_at")
     private LocalDate paidAt;
 
-    @OneToOne(mappedBy = "emiSchedule")
+    @OneToOne(mappedBy = "emi")
     private Payment payment;
 }
