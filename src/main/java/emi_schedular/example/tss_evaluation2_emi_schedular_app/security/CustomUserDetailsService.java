@@ -14,23 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Loads a User by email and adapts it into a Spring Security UserDetails.
- *
- * The account flags below are derived directly from UserAccountStatus, so
- * the AuthenticationManager itself rejects a bad-state login before any
- * controller code runs:
- *
- *   PENDING_VERIFICATION -> enabled = false   -> DisabledException
- *   INACTIVE              -> enabled = false   -> DisabledException
- *   BLOCKED                -> accountNonLocked = false -> LockedException
- *   ACTIVE                  -> enabled = true, accountNonLocked = true -> normal login
- *
- * This means a freshly-registered BORROWER (status = PENDING_VERIFICATION,
- * emailVerified = false) genuinely cannot obtain a JWT until whatever
- * verifies the OtpVerification(purpose = REGISTRATION) flips their status
- * to ACTIVE.
- */
+
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

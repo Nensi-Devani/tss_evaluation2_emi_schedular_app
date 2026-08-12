@@ -11,12 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-/**
- * Issues and validates the JWTs that carry a user's identity + role.
- * jwtSecret MUST be a Base64-encoded string that decodes to >= 256 bits
- * (32 bytes) for HS256 — a short plain-text string here will throw at
- * startup or (worse) silently produce a weak key.
- */
+
 @Component
 public class JwtTokenProvider {
 

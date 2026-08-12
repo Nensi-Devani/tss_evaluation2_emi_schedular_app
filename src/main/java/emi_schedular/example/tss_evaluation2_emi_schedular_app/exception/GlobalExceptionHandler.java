@@ -31,16 +31,10 @@ public class GlobalExceptionHandler {
         error.setPath(request.getRequestURI());
         error.setTimestamp(LocalDateTime.now());
         error.setErrors(errors);
-
         return ResponseEntity.status(status).body(error);
     }
 
-    // Covers UserApiException itself PLUS every subclass you uploaded:
-    // UserNotFoundException, UserAlreadyExistsException,
-    // ResourceNotFoundException, InvalidPageException,
-    // EmailSendingException, BusinessException, and your custom
-    // exception.AccessDeniedException. Each one already carries the right
-    // HttpStatus via its constructor, so we just read it off ex.getStatus().
+
     @ExceptionHandler(UserApiException.class)
     public ResponseEntity<ErrorResponse> handleUserApiException(
             UserApiException ex, HttpServletRequest request) {
@@ -49,8 +43,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), ex.getStatus(), request, null);
     }
 
-    // Thrown by Spring Security itself (@PreAuthorize / hasRole(...) checks
-    // failing on an authenticated-but-unauthorized user). This is the
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
             AccessDeniedException ex, HttpServletRequest request) {
@@ -92,9 +85,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED, request, null);
     }
 
-    // @Valid failures on @RequestBody DTOs (e.g. RegistrationRequestDto,
-    // LoginRequestDto). Field-level messages go in the "errors" map so the
-    // frontend can highlight individual inputs.
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -106,8 +97,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, request, errors);
     }
 
-    // e.g. a path variable like /api/loans/{id} receiving "abc" instead of
-    // a Long — without this it surfaces as an ugly 500.
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
@@ -117,8 +107,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(message, HttpStatus.BAD_REQUEST, request, null);
     }
 
-    // Final safety net — anything unanticipated (NPEs, DB errors that
-    // weren't wrapped, etc.) still comes back as clean JSON instead of a
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
             Exception ex, HttpServletRequest request) {

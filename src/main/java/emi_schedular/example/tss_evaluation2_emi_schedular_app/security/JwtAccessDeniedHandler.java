@@ -13,14 +13,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Fires when the JWT IS valid but the authenticated user's role isn't
- * allowed on the endpoint (e.g. a BORROWER hitting /api/admin/**).
- * The original config had no accessDeniedHandler registered, which means
- * this case fell back to Spring's default bare 403 with no body — easy to
- * confuse with a 401 on the frontend. This gives it the same JSON shape
- * as every other error response.
- */
+
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
