@@ -27,14 +27,11 @@ public class User extends BaseEntity{
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
     private Role role = Role.BORROWER;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
     private UserAccountStatus status = UserAccountStatus.PENDING_VERIFICATION;
 
-    @Column(nullable = false)
     private Boolean emailVerified = false;
 
 //    relationships
