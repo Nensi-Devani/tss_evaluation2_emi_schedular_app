@@ -32,7 +32,7 @@ public class User extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private UserAccountStatus status = UserAccountStatus.PENDING_VERIFICATION;
 
-    private Boolean emailVerified = true;
+    private Boolean emailVerified = false;
 
 //    relationships
 

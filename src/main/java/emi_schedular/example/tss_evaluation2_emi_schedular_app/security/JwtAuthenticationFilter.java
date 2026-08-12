@@ -16,24 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Runs once per request, ahead of Spring Security's own
- * UsernamePasswordAuthenticationFilter. Reads the "Authorization: Bearer
- * <token>" header, validates it, and — if valid — populates the
- * SecurityContext so downstream hasRole()/@PreAuthorize checks see an
- * authenticated user with the right authority.
- *
- * IMPORTANT FIX vs. a naive implementation: token errors are caught here
- * on purpose. If validateToken()'s UserApiException were allowed to
- * propagate, it would escape the filter chain as an unhandled 500 instead
- * of a clean 401 — this is the #1 way JWT filters "break in production"
- * the moment a client sends an expired or tampered token. Instead we just
- * leave the SecurityContext empty; the request falls through as
- * anonymous, and:
- *   - public endpoints (permitAll in SecurityConfig) still work fine
- *   - protected endpoints correctly get a clean 401 from
- *     JwtAuthenticationEntryPoint
- */
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

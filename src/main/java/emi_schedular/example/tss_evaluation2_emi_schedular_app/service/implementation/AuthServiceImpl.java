@@ -1,5 +1,6 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.service.implementation;
 
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.VerifyOtpRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.JwtResponseDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.LoginRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.RegistrationRequestDto;
@@ -11,6 +12,7 @@ import emi_schedular.example.tss_evaluation2_emi_schedular_app.exception.UserApi
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.UserRepository;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.security.JwtTokenProvider;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.AuthService;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final OtpService otpService;
 
     @Override
     @Transactional
@@ -35,30 +38,26 @@ public class AuthServiceImpl implements AuthService {
             throw new UserApiException("Email already registered");
         }
 
-        // Public registration can never grant anything but BORROWER — this
-        // is never read from the request body, it's hardcoded here.
-
-
-
         User user = new User();
+
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.BORROWER);
-        user.setStatus(UserAccountStatus.ACTIVE);   // <-- add this line
-        user.setEmailVerified(true);                 // <-- if this field exists on User
-
+        user.setStatus(UserAccountStatus.PENDING_VERIFICATION);
+        user.setEmailVerified(false);                // <-- if this field exists on User
         user = userRepository.save(user);
-
-        // status defaults to PENDING_VERIFICATION and emailVerified to
-        // false directly on the User entity, so this account cannot log
-        // in yet (see CustomUserDetailsService — enabled == false) until
-        // OTP verification (OtpVerification, purpose = REGISTRATION) runs
-        // and flips status to ACTIVE.
-
+        otpService.sendRegistrationOtp(user.getEmail());
         user = userRepository.save(user);
 
         return toDto(user);
+    }
+
+    @Override
+    @Transactional
+    public String verifyOtp(VerifyOtpRequestDto request) {
+        otpService.verifyRegistrationOtp(request);
+        return "Email verified successfully. Your account is now active.";
     }
 
 
@@ -67,12 +66,7 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginDto.getEmail(),
-                            loginDto.getPassword()
-                    )
-            );
-
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
             String token = tokenProvider.generateToken(authentication);
 
             String role = authentication.getAuthorities().stream()

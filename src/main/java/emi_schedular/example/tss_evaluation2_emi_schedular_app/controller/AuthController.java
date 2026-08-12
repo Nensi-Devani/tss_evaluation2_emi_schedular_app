@@ -1,5 +1,6 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.controller;
 
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.VerifyOtpRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.JwtResponseDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.LoginRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.RegistrationRequestDto;
@@ -26,6 +27,12 @@ public class AuthController {
         UserResponseDto response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto request) {
+        return ResponseEntity.ok(authService.verifyOtp(request));
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
