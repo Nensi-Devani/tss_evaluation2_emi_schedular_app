@@ -56,10 +56,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/register", "/api/auth/login" , "/api/auth/verify-otp").permitAll()
 
                 // BORROWER ("User") only
-                .requestMatchers("/api/user/**").hasRole("BORROWER")
+                .requestMatchers("/api/borrower/**").hasRole("BORROWER")
 
                 // LOAN_OFFICER ("loan_manager") only
-                .requestMatchers("/api/loan-manager/**").hasRole("LOAN_OFFICER")
+                .requestMatchers("/api/loan-officer/**").hasRole("LOAN_OFFICER")
 
                 // ADMIN only — includes staff creation
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
