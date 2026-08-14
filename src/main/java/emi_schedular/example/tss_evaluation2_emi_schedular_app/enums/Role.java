@@ -4,6 +4,5 @@ public enum Role {
 
     ADMIN,
     LOAN_OFFICER,
-    BORROWER,
-    SYSTEM
+    BORROWER
 }

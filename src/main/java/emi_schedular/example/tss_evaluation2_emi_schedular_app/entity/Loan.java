@@ -87,7 +87,7 @@ public class Loan extends BaseEntity{
             precision = 15,
             scale = 2
     )
-    private BigDecimal remainingDeptAmount;
+    private BigDecimal remainingDebtAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(
