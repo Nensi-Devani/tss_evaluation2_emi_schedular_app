@@ -1,9 +1,7 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.service;
 
-import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.VerifyOtpRequestDto;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.*;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.JwtResponseDto;
-import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.LoginRequestDto;
-import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.RegistrationRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.UserResponseDto;
 
 public interface AuthService {
@@ -12,7 +10,8 @@ public interface AuthService {
     UserResponseDto register(RegistrationRequestDto request);
 
     String verifyOtp(VerifyOtpRequestDto request);
-
-
     JwtResponseDto login(LoginRequestDto loginDto);
+    void changePassword(String email, ChangePasswordRequestDto request);
+    void forgotPassword(ForgotPasswordRequestDto request);
+    void resetPassword(ResetPasswordRequestDto request);
 }
