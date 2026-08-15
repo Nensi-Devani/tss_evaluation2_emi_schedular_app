@@ -60,7 +60,7 @@ public class Emi extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private EmiStatus status;
+    private EmiStatus status = EmiStatus.PENDING;
 
     @Column(name = "paid_at")
     private LocalDate paidAt;
