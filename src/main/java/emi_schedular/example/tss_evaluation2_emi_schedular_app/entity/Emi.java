@@ -1,6 +1,6 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.entity;
 
-import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.EmiStatus;
+import  emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.EmiStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
