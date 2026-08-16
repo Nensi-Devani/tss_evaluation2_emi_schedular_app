@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class ResourceNotFoundException extends UserApiException{
     public ResourceNotFoundException(String resource) {
-        super(resource+" not found", HttpStatus.NOT_FOUND);
+        super(resource, HttpStatus.NOT_FOUND);
     }
 }
