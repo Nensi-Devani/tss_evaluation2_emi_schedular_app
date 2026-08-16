@@ -50,4 +50,20 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
     );
 
     Optional<Emi> findByIdAndLoanId(Long emiId, Long loanId);
+
+    @Query("""
+            SELECT e
+            FROM Emi e
+            JOIN e.loan l
+            WHERE l.id = :loanId
+              AND (:status IS NULL OR e.status = :status)
+            ORDER BY e.dueDate ASC
+            """)
+    Page<Emi> findByLoanIdAndStatus(
+            @Param("loanId") Long loanId,
+            @Param("status") EmiStatus status,
+            Pageable pageable
+    );
+
+    Optional<Emi> findFirstByLoanIdAndStatusAndDueDateGreaterThanEqualOrderByDueDateAsc(Long loanId, EmiStatus status, LocalDate date);
 }
