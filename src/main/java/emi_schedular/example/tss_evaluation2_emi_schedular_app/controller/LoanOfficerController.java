@@ -25,12 +25,6 @@ public class LoanOfficerController {
 
     @GetMapping
     public ResponseEntity<PageDto<LoanResponseDto>> getAllLoans(LoanFilterRequestDto filter, @PageableDefault(page = 0,size = 10,sort = "createdAt") Pageable pageable) {
-        log.info(
-                "Loan officer requested all loans. Page={}, Size={}",
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-        );
-
         PageDto<LoanResponseDto> response = loanOfficerService.getAllLoans(filter,pageable);
 
         return ResponseEntity.ok(response);
@@ -38,12 +32,6 @@ public class LoanOfficerController {
 
     @GetMapping("/pending")
     public ResponseEntity<PageDto<LoanResponseDto>> getPendingLoans(@PageableDefault(page = 0, size = 10, sort = "createdAt") Pageable pageable) {
-        log.info(
-                "Loan officer requested pending loans. Page={}, Size={}",
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-        );
-
         PageDto<LoanResponseDto> response = loanOfficerService.getPendingLoans(pageable);
 
         return ResponseEntity.ok(response);
@@ -51,11 +39,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{id}/borrower")
     public ResponseEntity<BorrowerResponseDto> getBorrowerByLoanId(@PathVariable Long id) {
-        log.info(
-                "Loan officer requested borrower information for loan id: {}",
-                id
-        );
-
         BorrowerResponseDto response = loanOfficerService.getBorrowerByLoanId(id);
 
         return ResponseEntity.ok(response);
@@ -63,11 +46,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LoanResponseDto> getLoanById(@PathVariable Long id) {
-        log.info(
-                "Loan officer requested loan with id: {}",
-                id
-        );
-
         LoanResponseDto response = loanOfficerService.getLoanById(id);
 
         return ResponseEntity.ok(response);
@@ -75,11 +53,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{id}/financial-profile")
     public ResponseEntity<UserFinancialProfileResponseDto> getFinancialProfileByLoanId(@PathVariable Long id) {
-        log.info(
-                "Loan officer requested financial profile for loan id: {}",
-                id
-        );
-
         UserFinancialProfileResponseDto response = loanOfficerService.getFinancialProfileByLoanId(id);
 
         return ResponseEntity.ok(response);
@@ -87,11 +60,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{id}/emis")
     public ResponseEntity<PageDto<EmiResponseDto>> getEmisByLoanId(@PathVariable Long id, @PageableDefault(page = 0, size = 10, sort = "installmentNumber") Pageable pageable) {
-        log.info(
-                "Loan officer requested EMI schedule for loan id: {}",
-                id
-        );
-
         PageDto<EmiResponseDto> response = loanOfficerService.getEmisByLoanId(id, pageable);
 
         return ResponseEntity.ok(response);
@@ -99,11 +67,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{id}/payments")
     public ResponseEntity<PageDto<PaymentResponseDto>> getPaymentsByLoanId(@PathVariable Long id, @PageableDefault(page = 0, size = 10, sort = "paymentDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info(
-                "Loan officer requested payment history for loan id: {}",
-                id
-        );
-
         PageDto<PaymentResponseDto> response = loanOfficerService.getPaymentsByLoanId(id,pageable);
 
         return ResponseEntity.ok(response);
@@ -111,13 +74,6 @@ public class LoanOfficerController {
 
     @GetMapping("/emis/overdue")
     public ResponseEntity<PageDto<EmiResponseDto>> getOverdueEmis(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth month, Pageable pageable) {
-        log.info(
-                "Loan officer requested overdue EMIs. month={}, page={}, size={}",
-                month,
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-        );
-
         PageDto<EmiResponseDto> response = loanOfficerService.getOverdueEmis(month, pageable);
 
         return ResponseEntity.ok(response);
@@ -125,12 +81,6 @@ public class LoanOfficerController {
 
     @GetMapping("/{loanId}/emis/{emiId}")
     public ResponseEntity<EmiResponseDto> getEmiByLoanAndEmiId(@PathVariable Long loanId, @PathVariable Long emiId) {
-        log.info(
-                "Loan officer requested EMI. loanId={}, emiId={}",
-                loanId,
-                emiId
-        );
-
         EmiResponseDto response = loanOfficerService.getEmiByLoanAndEmiId(loanId, emiId);
 
         return ResponseEntity.ok(response);

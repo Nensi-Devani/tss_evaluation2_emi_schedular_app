@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/admin/audit-logs")
 @RequiredArgsConstructor
@@ -24,22 +22,11 @@ public class AdminAuditLogController {
 
     @GetMapping
     public ResponseEntity<PageDto<AuditLogResponseDto>> getAuditLogs(Pageable pageable) {
-        log.info(
-                "Admin requested audit logs. page={}, size={}",
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-        );
-
         return ResponseEntity.ok(auditLogService.getAuditLogs(pageable));
     }
 
     @GetMapping("/{loanId}")
     public ResponseEntity<PageDto<AuditLogResponseDto>> getLoanAuditLogs(@PathVariable Long loanId, Pageable pageable) {
-        log.info(
-                "Admin requested audit trail for loan id={}",
-                loanId
-        );
-
         return ResponseEntity.ok(auditLogService.getLoanAuditLogs(loanId,pageable));
     }
 }

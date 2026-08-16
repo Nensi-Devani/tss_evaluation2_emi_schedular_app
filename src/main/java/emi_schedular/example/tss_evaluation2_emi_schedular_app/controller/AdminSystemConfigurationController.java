@@ -21,32 +21,16 @@ public class AdminSystemConfigurationController {
 
     @GetMapping
     public ResponseEntity<PageDto<SystemConfigurationResponseDto>> getConfigurations(Pageable pageable) {
-        log.info(
-                "Admin requested configurations. page={}, size={}",
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-        );
-
         return ResponseEntity.ok(configurationService.getConfigurations(pageable));
     }
 
     @GetMapping("/{key}")
     public ResponseEntity<SystemConfigurationResponseDto> getConfigurationByKey(@PathVariable String key) {
-        log.info(
-                "Admin requested configuration. key={}",
-                key
-        );
-
         return ResponseEntity.ok(configurationService.getConfigurationByKey(key));
     }
 
     @PutMapping("/{key}")
     public ResponseEntity<SystemConfigurationResponseDto> updateConfiguration(@PathVariable String key, @Valid @RequestBody UpdateSystemConfigurationRequestDto request) {
-        log.info(
-                "Admin updating configuration. key={}",
-                key
-        );
-
         SystemConfigurationResponseDto response = configurationService.updateConfiguration(key, request);
 
         return ResponseEntity.ok(response);
