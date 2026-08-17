@@ -2,20 +2,25 @@ package emi_schedular.example.tss_evaluation2_emi_schedular_app.service.implemen
 
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.common.PageDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.LoanFilterRequestDto;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.UpdateLoanStrategyRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.*;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.entity.*;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.*;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.exception.ResourceNotFoundException;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.exception.UserApiException;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.mapper.*;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.EmiRepository;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.LoanRepository;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.PaymentRepository;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.AuditLogService;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.LoanOfficerService;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.SecurityService;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.specification.LoanSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +41,9 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
     private final PaymentMapper paymentMapper;
     private final UserMapper userMapper;
     private final UserFinancialProfileMapper userFinancialProfileMapper;
+
+    private final AuditLogService auditLogService;
+    private final SecurityService securityService;
 
     @Override
     public PageDto<LoanResponseDto> getAllLoans(LoanFilterRequestDto filter, Pageable pageable) {
@@ -200,6 +208,78 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
                 );
 
         return emiMapper.toResponseDto(emi);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LoanStrategyResponseDto getLoanStrategy(Long loanId) {
+        log.info(
+                "Loan officer requested loan strategy. loanId={}",
+                loanId
+        );
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Loan not found with id: " + loanId
+                        )
+                );
+
+        return new LoanStrategyResponseDto(
+                loan.getId(),
+                loan.getStrategy()
+        );
+    }
+
+    @Override
+    @Transactional
+    public LoanStrategyResponseDto updateLoanStrategy(Long loanId, UpdateLoanStrategyRequestDto request) {
+        log.info(
+                "Loan officer requested strategy update. loanId={}, strategy={}",
+                loanId,
+                request.getStrategy()
+        );
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Loan not found with id: " + loanId
+                        )
+                );
+
+        if (loan.getLoanStatus() != LoanStatus.PENDING) {
+            throw new UserApiException("Strategy can only be changed while the loan is pending", HttpStatus.BAD_REQUEST);
+        }
+
+        LoanStrategy oldStrategy = loan.getStrategy();
+        LoanStrategy newStrategy = request.getStrategy();
+
+        if (oldStrategy == newStrategy) {
+            throw new UserApiException("Loan already uses the selected strategy", HttpStatus.BAD_REQUEST);
+        }
+
+        loan.setStrategy(newStrategy);
+
+        loanRepository.save(loan);
+
+        auditLogService.createAuditLog(
+                securityService.getCurrentUser(),
+                AuditAction.STRATEGY_OVERRIDDEN,
+                "LOAN",
+                loanId
+        );
+
+        log.info(
+                "Loan strategy updated. loanId={}, oldStrategy={}, newStrategy={}",
+                loanId,
+                oldStrategy,
+                newStrategy
+        );
+
+        return new LoanStrategyResponseDto(
+                loanId,
+                newStrategy
+        );
     }
 
     private Loan getLoanEntity(Long loanId) {
