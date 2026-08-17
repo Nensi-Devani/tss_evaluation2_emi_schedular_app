@@ -67,7 +67,7 @@ public class LoanServiceImpl implements LoanService {
             throw new ResourceNotFoundException("Financial profile");
         }
 
-        // "P" - max ACTIVE loans a borrower may hold, read straight from system config table
+
         int maxActiveLoans = configService.getInt("MAX_ACTIVE_LOANS");
         long activeLoans = loanRepository.countByBorrowerAndLoanStatus(user, LoanStatus.ACTIVE);
         if (activeLoans >= maxActiveLoans) {
@@ -83,9 +83,22 @@ public class LoanServiceImpl implements LoanService {
         // Estimated New EMI: a strategy-neutral reducing-balance estimate just for DTI sizing.
         // The actual EMI schedule is generated later using whichever strategy gets approved.
         BigDecimal estimatedNewEmi = estimateEmi(request.getLoanAmount(), request.getTenure(), loanType.getInterestRate());
-        BigDecimal dti = existingDebt.add(estimatedNewEmi)
-                .divide(monthlyIncome, 2, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+        //2. Get EMI of already ACTIVE loans
+        BigDecimal activeLoanEmi = loanRepository.sumEmiByBorrowerAndLoanStatus(user, LoanStatus.ACTIVE);
+        if (activeLoanEmi == null) {
+            activeLoanEmi = BigDecimal.ZERO;
+        }
+//      3. Get EMI of already PENDING applications
+//         Therefore this query only returns previous pending applicationsTheir emiAmount is their estimated EMI.
+//                The current application has NOT been saved yet.
+
+        BigDecimal pendingLoanEmi = loanRepository.sumEmiByBorrowerAndLoanStatus(user, LoanStatus.PENDING);
+
+        if (pendingLoanEmi == null) {
+            pendingLoanEmi = BigDecimal.ZERO;
+        }
+        BigDecimal totalMonthlyObligation = existingDebt.add(activeLoanEmi).add(pendingLoanEmi).add(estimatedNewEmi);
+        BigDecimal dti = totalMonthlyObligation.divide(monthlyIncome, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 
         StrategyDecision decision = strategyDecisionEngine.decide(dti, request.getTenure());
 
