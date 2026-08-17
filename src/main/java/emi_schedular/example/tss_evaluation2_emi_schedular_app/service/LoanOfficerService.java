@@ -2,6 +2,7 @@ package emi_schedular.example.tss_evaluation2_emi_schedular_app.service;
 
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.common.PageDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.LoanFilterRequestDto;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.request.UpdateLoanStrategyRequestDto;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response.*;
 import org.springframework.data.domain.Pageable;
 
@@ -26,4 +27,8 @@ public interface LoanOfficerService {
     PageDto<EmiResponseDto> getOverdueEmis(YearMonth month, Pageable pageable);
 
     EmiResponseDto getEmiByLoanAndEmiId(Long loanId, Long emiId);
+
+    LoanStrategyResponseDto getLoanStrategy(Long loanId);
+
+    LoanStrategyResponseDto updateLoanStrategy(Long loanId,UpdateLoanStrategyRequestDto request);
 }

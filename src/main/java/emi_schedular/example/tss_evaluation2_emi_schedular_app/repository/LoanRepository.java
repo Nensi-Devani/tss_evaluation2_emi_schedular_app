@@ -1,6 +1,7 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.repository;
 
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.entity.Loan;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificationExecutor<Loan> {
 
     boolean existsByIdAndBorrowerId(Long loanId, Long borrowerId);
+
+    boolean existsByIdAndLoanStatus(Long loanId, LoanStatus loanStatus);
 }
