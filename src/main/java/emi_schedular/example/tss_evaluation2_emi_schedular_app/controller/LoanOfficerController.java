@@ -79,4 +79,10 @@ public class LoanOfficerController {
     public ResponseEntity<LoanStrategyResponseDto> updateLoanStrategy(@PathVariable Long loanId, @Valid @RequestBody UpdateLoanStrategyRequestDto request) {
         return ResponseEntity.ok(loanOfficerService.updateLoanStrategy(loanId, request));
     }
+
+    @PostMapping("/{loanId}/approve")
+    public ResponseEntity<Void> approveLoan(@PathVariable Long loanId) {
+        loanOfficerService.approveLoan(loanId);
+        return ResponseEntity.ok().build();
+    }
 }

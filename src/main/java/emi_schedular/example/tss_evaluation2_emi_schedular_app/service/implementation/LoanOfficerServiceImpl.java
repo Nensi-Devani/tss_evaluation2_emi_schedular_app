@@ -13,8 +13,10 @@ import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.EmiRep
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.LoanRepository;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.repository.PaymentRepository;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.AuditLogService;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.EmiCalculationService;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.LoanOfficerService;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.SecurityService;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.strategy.EmiCalculationStrategy;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.specification.LoanSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +49,7 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
 
     private final AuditLogService auditLogService;
     private final SecurityService securityService;
+    private final EmiCalculationService emiCalculationService;
 
     @Override
     public PageDto<LoanResponseDto> getAllLoans(LoanFilterRequestDto filter, Pageable pageable) {
@@ -279,6 +285,61 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
         return new LoanStrategyResponseDto(
                 loanId,
                 newStrategy
+        );
+    }
+
+    @Override
+    @Transactional
+    public void approveLoan(Long loanId) {
+        log.info("Loan approval requested. loanId={}", loanId);
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Loan not found with id: " + loanId)
+                );
+
+        if (loan.getLoanStatus() != LoanStatus.PENDING) {
+            throw new UserApiException("Only pending loans can be approved", HttpStatus.BAD_REQUEST);
+        }
+
+        if (loan.getStrategy() == null) {
+            throw new UserApiException("Loan strategy must be selected before approval", HttpStatus.BAD_REQUEST);
+        }
+
+        if (loan.getFirstEmiDate() == null) {
+            loan.setFirstEmiDate(LocalDate.now().plusMonths(1));
+        }
+
+        List<Emi> emis = emiCalculationService.generateSchedule(loan);
+
+        if (emis == null || emis.isEmpty()) {
+            throw new UserApiException("Unable to generate EMI schedule for loan", HttpStatus.BAD_REQUEST);
+        }
+
+        emiRepository.saveAll(emis);
+
+        loan.setLoanStatus(LoanStatus.ACTIVE);
+        loan.setApprovedBy(securityService.getCurrentUser());
+        loan.setApprovedAt(LocalDateTime.now());
+        loan.setEmiAmount(emis.get(0).getEmiAmount());
+        loan.setRemainingDebtAmount(loan.getRequestedAmount());
+
+        loanRepository.save(loan);
+
+        auditLogService.createAuditLog(
+                securityService.getCurrentUser(),
+                AuditAction.LOAN_APPROVED,
+                "LOAN",
+                loanId
+        );
+
+        log.info(
+                "Loan approved successfully. loanId={}, loanType={}, interestRate={}, strategy={}, emiCount={}",
+                loanId,
+                loan.getLoanType(),
+                loan.getInterestRate(),
+                loan.getStrategy(),
+                emis.size()
         );
     }
 

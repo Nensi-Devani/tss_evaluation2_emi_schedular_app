@@ -31,4 +31,6 @@ public interface LoanOfficerService {
     LoanStrategyResponseDto getLoanStrategy(Long loanId);
 
     LoanStrategyResponseDto updateLoanStrategy(Long loanId,UpdateLoanStrategyRequestDto request);
+
+    void approveLoan(Long loanId);
 }
