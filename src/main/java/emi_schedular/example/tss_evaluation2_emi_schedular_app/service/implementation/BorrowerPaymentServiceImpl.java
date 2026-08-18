@@ -113,13 +113,15 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
 
         BigDecimal penalty = BigDecimal.ZERO;
 
-        if (emi.getDueDate().isBefore(today)) {
+        boolean overdue = emi.getDueDate() != null && emi.getDueDate().isBefore(today);
+
+        if (overdue) {
             emi.setStatus(EmiStatus.OVERDUE);
 
             penalty = new BigDecimal("100.00");
 
             auditLogService.createAuditLog(
-                    securityService.getCurrentUser(),
+                    currentUser,
                     AuditAction.EMI_MARKED_OVERDUE,
                     "EMI",
                     emiId
@@ -145,11 +147,26 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
         payment.setPaymentDate(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        emi.setStatus(EmiStatus.PAID);
-        emi.setPaidAt(LocalDate.now());
+        if (!overdue) {
+            emi.setStatus(EmiStatus.PAID);
+
+            auditLogService.createAuditLog(
+                    currentUser,
+                    AuditAction.EMI_MARKED_PAID,
+                    "EMI",
+                    emiId
+            );
+        }
+
+        emi.setPaidAt(today);
+
         emiRepository.save(emi);
 
         BigDecimal remainingDebt = loan.getRemainingDebtAmount();
+
+        if (remainingDebt == null) {
+            remainingDebt = loan.getRequestedAmount();
+        }
 
         remainingDebt = remainingDebt
                 .subtract(emi.getEmiAmount())
@@ -160,20 +177,14 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
 
         loanRepository.save(loan);
 
-        auditLogService.createAuditLog(
-                securityService.getCurrentUser(),
-                AuditAction.EMI_MARKED_PAID,
-                "EMI",
-                emiId
-        );
-
         log.info(
-                "EMI payment successful. emiId={}, loanId={}, emiAmount={}, penalty={}, totalAmount={}, remainingDebt={}",
+                "EMI payment successful. emiId={}, loanId={}, emiAmount={}, penalty={}, totalAmount={}, finalEmiStatus={}, remainingDebt={}",
                 emiId,
                 loan.getId(),
                 emi.getEmiAmount(),
                 penalty,
                 totalAmount,
+                emi.getStatus(),
                 remainingDebt
         );
     }
