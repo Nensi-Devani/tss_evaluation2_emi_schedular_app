@@ -82,7 +82,13 @@ public class LoanOfficerController {
 
     @PostMapping("/{loanId}/approve")
     public ResponseEntity<Void> approveLoan(@PathVariable Long loanId) {
-        loanOfficerService.approveLoan(loanId);
+        loanOfficerService.approveLoan(loanId); 
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{loanId}/reject")
+    public ResponseEntity<Void> rejectLoan(@PathVariable Long loanId) {
+        loanOfficerService.rejectLoan(loanId);
         return ResponseEntity.ok().build();
     }
 }

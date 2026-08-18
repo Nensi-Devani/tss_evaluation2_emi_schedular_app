@@ -343,6 +343,44 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
         );
     }
 
+    @Override
+    @Transactional
+    public void rejectLoan(Long loanId) {
+        log.info("Loan rejection requested. loanId={}", loanId);
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Loan not found with id: " + loanId
+                        )
+                );
+
+        if (loan.getLoanStatus() != LoanStatus.PENDING) {
+            throw new UserApiException("Only pending loans can be rejected", HttpStatus.BAD_REQUEST);
+        }
+
+        loan.setLoanStatus(LoanStatus.REJECTED);
+        loan.setApprovedBy(securityService.getCurrentUser());
+        loan.setApprovedAt(LocalDateTime.now());
+
+        loanRepository.save(loan);
+
+        auditLogService.createAuditLog(
+                securityService.getCurrentUser(),
+                AuditAction.LOAN_REJECTED,
+                "LOAN",
+                loanId
+        );
+
+        log.info(
+                "Loan rejected successfully. loanId={}, loanType={}, interestRate={}, strategy={}",
+                loanId,
+                loan.getLoanType(),
+                loan.getInterestRate(),
+                loan.getStrategy()
+        );
+    }
+
     private Loan getLoanEntity(Long loanId) {
         return loanRepository.findById(loanId)
                 .orElseThrow(() -> {
