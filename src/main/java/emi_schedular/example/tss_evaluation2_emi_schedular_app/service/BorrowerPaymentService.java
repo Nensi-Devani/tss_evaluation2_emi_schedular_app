@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface BorrowerPaymentService {
 
     PageDto<PaymentResponseDto> getPaymentHistory(Long loanId, Pageable pageable);
+
+    void payEmi(Long emiId);
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -66,4 +67,6 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
     );
 
     Optional<Emi> findFirstByLoanIdAndStatusAndDueDateGreaterThanEqualOrderByDueDateAsc(Long loanId, EmiStatus status, LocalDate date);
+
+    Optional<Emi> findFirstByLoanIdAndStatusInOrderByInstallmentNumberAsc(Long loanId, List<EmiStatus> statuses);
 }

@@ -22,4 +22,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             ORDER BY p.paymentDate DESC
             """)
     Page<Payment> findPaymentHistoryByLoanId(@Param("loanId") Long loanId, Pageable pageable);
+
+    boolean existsByEmiId(Long emiId);
 }
