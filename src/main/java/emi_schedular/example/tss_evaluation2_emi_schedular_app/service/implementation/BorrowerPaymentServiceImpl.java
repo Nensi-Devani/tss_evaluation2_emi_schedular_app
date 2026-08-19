@@ -96,7 +96,7 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
         Emi firstUnpaidEmi = emiRepository
                 .findFirstByLoanIdAndStatusInOrderByInstallmentNumberAsc(
                         loan.getId(),
-                        List.of(EmiStatus.PENDING, EmiStatus.OVERDUE)
+                        List.of(EmiStatus.PENDING)
                 )
                 .orElseThrow(() ->
                         new UserApiException("There are no pending EMIs to pay",HttpStatus.BAD_REQUEST)
