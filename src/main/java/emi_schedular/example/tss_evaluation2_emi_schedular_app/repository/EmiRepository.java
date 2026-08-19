@@ -58,7 +58,7 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
             JOIN e.loan l
             WHERE l.id = :loanId
               AND (:status IS NULL OR e.status = :status)
-            ORDER BY e.dueDate ASC
+            ORDER BY e.id ASC
             """)
     Page<Emi> findByLoanIdAndStatus(
             @Param("loanId") Long loanId,
