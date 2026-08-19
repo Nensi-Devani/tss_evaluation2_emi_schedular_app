@@ -20,7 +20,6 @@ public class AuditServiceImpl implements AuditService {
     public void log(User actor, AuditAction action, String targetEntity, Long targetId) {
         AuditLog auditLog = new AuditLog();
         auditLog.setActor(actor);
-        //auditLog.setActorType(actor.getRole());
         auditLog.setAction(action);
         auditLog.setTargetEntity(targetEntity);
         auditLog.setTargetId(targetId);

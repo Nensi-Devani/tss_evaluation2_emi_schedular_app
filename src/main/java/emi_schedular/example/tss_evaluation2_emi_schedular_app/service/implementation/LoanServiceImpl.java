@@ -113,8 +113,8 @@ public class LoanServiceImpl implements LoanService {
         loan.setRiskLevel(decision.riskLevel());
         loan.setStrategy(decision.suggestedStrategy());
         loan.setInterestRate(loanType.getInterestRate());
-        loan.setRemainingDebtAmount(request.getLoanAmount());
-        loan.setEmiAmount(estimatedNewEmi);
+       // loan.setRemainingDebtAmount(request.getLoanAmount());
+       // loan.setEmiAmount(estimatedNewEmi);
         loan.setLoanStatus(LoanStatus.PENDING);
         loan = loanRepository.save(loan);
 
@@ -190,8 +190,8 @@ public class LoanServiceImpl implements LoanService {
                 .riskLevel(loan.getRiskLevel() != null ? loan.getRiskLevel().name() : null)
                 .strategy(loan.getStrategy() != null ? loan.getStrategy().name() : null)
                 .interestRate(loan.getInterestRate())
-                .emiAmount(loan.getEmiAmount())
-                .outstandingAmount(loan.getRemainingDebtAmount())
+                .emiAmount(loan.getEmiAmount() != null ? loan.getEmiAmount() : null)
+                .outstandingAmount(loan.getRemainingDebtAmount() != null ? loan.getRemainingDebtAmount() : null)
                 .loanStatus(loan.getLoanStatus() != null ? loan.getLoanStatus().name() : null)
                 .approvedAt(loan.getApprovedAt())
                 .firstEmiDate(loan.getFirstEmiDate())
