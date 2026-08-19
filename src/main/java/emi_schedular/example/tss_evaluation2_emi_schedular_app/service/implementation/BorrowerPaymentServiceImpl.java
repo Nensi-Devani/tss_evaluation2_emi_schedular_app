@@ -89,7 +89,7 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
             throw new UserApiException("You are not authorized to pay this EMI", HttpStatus.FORBIDDEN);
         }
 
-        if (emi.getStatus() == EmiStatus.PAID) {
+        if (emi.getStatus() == EmiStatus.PAID || emi.getStatus() == EmiStatus.OVERDUE) {
             throw new UserApiException("This EMI has already been paid", HttpStatus.BAD_REQUEST);
         }
 
@@ -99,7 +99,7 @@ public class BorrowerPaymentServiceImpl implements BorrowerPaymentService {
                         List.of(EmiStatus.PENDING, EmiStatus.OVERDUE)
                 )
                 .orElseThrow(() ->
-                        new UserApiException("There are no pending EMIs to pay", HttpStatus.BAD_REQUEST)
+                        new UserApiException("There are no pending EMIs to pay",HttpStatus.BAD_REQUEST)
                 );
 
         if (!firstUnpaidEmi.getId().equals(emi.getId())) {
