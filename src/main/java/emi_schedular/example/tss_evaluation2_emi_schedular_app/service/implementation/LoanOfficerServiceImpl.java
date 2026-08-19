@@ -350,9 +350,7 @@ public class LoanOfficerServiceImpl implements LoanOfficerService {
 
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Loan not found with id: " + loanId
-                        )
+                        new ResourceNotFoundException("Loan not found with id: " + loanId)
                 );
 
         if (loan.getLoanStatus() != LoanStatus.PENDING) {

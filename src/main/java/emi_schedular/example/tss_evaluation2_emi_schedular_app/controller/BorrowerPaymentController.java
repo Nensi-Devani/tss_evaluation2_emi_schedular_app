@@ -6,10 +6,7 @@ import emi_schedular.example.tss_evaluation2_emi_schedular_app.service.BorrowerP
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/borrower/loans")
@@ -21,5 +18,11 @@ public class BorrowerPaymentController {
     @GetMapping("/{loanId}/payments")
     public ResponseEntity<PageDto<PaymentResponseDto>> getPaymentHistory(@PathVariable Long loanId, Pageable pageable) {
         return ResponseEntity.ok(borrowerPaymentService.getPaymentHistory(loanId, pageable));
+    }
+
+    @PostMapping("/emis/{emiId}/pay")
+    public ResponseEntity<Void> payEmi(@PathVariable Long emiId) {
+        borrowerPaymentService.payEmi(emiId);
+        return ResponseEntity.ok().build();
     }
 }
