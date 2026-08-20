@@ -68,7 +68,7 @@ public class EmiNotificationScheduler {
         log.info("EMI reminder scheduler completed.");
     }
 
-    // 9 am
+    // 9 : 10 am
     @Scheduled(cron = "0 10 9 * * *", zone = "Asia/Kolkata")
     @Transactional
     public void sendOverdueEmiEmails() {
