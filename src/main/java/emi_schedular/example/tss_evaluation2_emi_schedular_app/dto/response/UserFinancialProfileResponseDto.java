@@ -11,8 +11,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class UserFinancialProfileResponseDto {
 
-    private Long id;
-
     private String pan;
 
     private String aadhar;

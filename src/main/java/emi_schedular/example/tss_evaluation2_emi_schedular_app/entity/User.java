@@ -34,6 +34,8 @@ public class User extends BaseEntity{
 
     private Boolean emailVerified = false;
 
+    private Boolean KycVerified = false;
+
 //    relationships
 
     @OneToOne(

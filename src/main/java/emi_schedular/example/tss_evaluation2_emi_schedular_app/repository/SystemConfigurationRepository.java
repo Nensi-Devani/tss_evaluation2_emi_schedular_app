@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface SystemConfigurationRepository extends JpaRepository<SystemConfiguration, Long> {
 
-    Optional<SystemConfiguration> findByConfigKey(String key);
+    Optional<SystemConfiguration> findByConfigKey(String configKey);
+
+    boolean existsByConfigKey(String configKey);
 }

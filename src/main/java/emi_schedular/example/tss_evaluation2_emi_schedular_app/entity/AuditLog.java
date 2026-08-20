@@ -19,14 +19,6 @@ public class AuditLog extends BaseEntity{
     @JoinColumn(name = "actor_id")
     private User actor;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(
-//            name = "actor_type",
-//            nullable = false,
-//            length = 20
-//    )
-//    private Role actorType;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private AuditAction action;

@@ -18,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
+
+
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+
     }
 
     @Bean
@@ -48,7 +52,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 // Public: no token required
-                .requestMatchers("/api/auth/register", "/api/auth/login" , "/api/auth/verify-otp").permitAll()
+                .requestMatchers("/api/auth/register", "/api/auth/login" ,
+                        "/api/auth/verify-otp","/api/auth/change-password", "/api/auth/forgot-password",
+                        "/api/auth/reset-password").permitAll()
 
                 // BORROWER ("User") only
                 .requestMatchers("/api/borrower/**").hasRole("BORROWER")
