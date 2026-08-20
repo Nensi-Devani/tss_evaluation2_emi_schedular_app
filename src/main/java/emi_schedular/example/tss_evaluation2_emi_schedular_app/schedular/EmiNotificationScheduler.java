@@ -69,7 +69,7 @@ public class EmiNotificationScheduler {
     }
 
     // 9 am
-    @Scheduled(cron = "0 55 9 * * *", zone = "Asia/Kolkata")
+    @Scheduled(cron = "0 10 9 * * *", zone = "Asia/Kolkata")
     @Transactional
     public void sendOverdueEmiEmails() {
         LocalDate today = LocalDate.now();
