@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,7 +18,6 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     // used by borrower endpoints: makes sure the loan actually belongs to the logged-in borrower
     Optional<Loan> findByIdAndBorrower_Email(Long id, String email);
-
 
     List<Loan> findByBorrower_EmailOrderByCreatedAtDesc(String email);
 
@@ -38,4 +38,9 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
               AND l.loanStatus = :loanStatus
             """)
     BigDecimal sumEmiByBorrowerAndLoanStatus(@Param("borrower") User borrower, @Param("loanStatus") LoanStatus loanStatus);
+
+           
+    boolean existsByIdAndBorrowerId(Long loanId, Long borrowerId);
+
+    boolean existsByIdAndLoanStatus(Long loanId, LoanStatus loanStatus);
 }

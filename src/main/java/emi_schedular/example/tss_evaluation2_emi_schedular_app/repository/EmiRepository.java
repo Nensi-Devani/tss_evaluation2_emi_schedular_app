@@ -2,6 +2,7 @@ package emi_schedular.example.tss_evaluation2_emi_schedular_app.repository;
 
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.entity.Emi;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.EmiStatus;
+import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.LoanStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmiRepository extends JpaRepository<Emi, Long> {
@@ -57,4 +60,89 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
               AND e.dueDate < :today
             """)
     Page<Emi> findOverdueEmis(@Param("loanId") Long loanId, @Param("email") String email, @Param("status") EmiStatus status, @Param("today") LocalDate today, Pageable pageable);
+}
+    Page<Emi> findByLoanId(Long loanId, Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Emi e
+            JOIN e.loan l
+            WHERE e.status = :status
+              AND l.loanStatus = :loanStatus
+            ORDER BY e.dueDate ASC
+            """)
+    Page<Emi> findOverdueEmis(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT e
+            FROM Emi e
+            JOIN e.loan l
+            WHERE e.status = :status
+              AND l.loanStatus = :loanStatus
+              AND e.dueDate BETWEEN :startDate AND :endDate
+            ORDER BY e.dueDate ASC
+            """)
+    Page<Emi> findOverdueEmisByMonth(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable
+    );
+
+    Optional<Emi> findByIdAndLoanId(Long emiId, Long loanId);
+
+    @Query("""
+            SELECT e
+            FROM Emi e
+            JOIN e.loan l
+            WHERE l.id = :loanId
+              AND (:status IS NULL OR e.status = :status)
+            ORDER BY e.id ASC
+            """)
+    Page<Emi> findByLoanIdAndStatus(
+            @Param("loanId") Long loanId,
+            @Param("status") EmiStatus status,
+            Pageable pageable
+    );
+
+    Optional<Emi> findFirstByLoanIdAndStatusAndDueDateGreaterThanEqualOrderByDueDateAsc(Long loanId, EmiStatus status, LocalDate date);
+
+    Optional<Emi> findFirstByLoanIdAndStatusInOrderByInstallmentNumberAsc(Long loanId, List<EmiStatus> statuses);
+
+    @Query("""
+        SELECT e
+        FROM Emi e
+        JOIN FETCH e.loan l
+        JOIN FETCH l.borrower b
+        WHERE e.status = :status
+          AND l.loanStatus = :loanStatus
+          AND e.dueDate = :dueDate
+        ORDER BY e.id ASC
+        """)
+    List<Emi> findEmisForReminder(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            @Param("dueDate") LocalDate dueDate
+    );
+
+    @Query("""
+        SELECT e
+        FROM Emi e
+        JOIN FETCH e.loan l
+        JOIN FETCH l.borrower b
+        WHERE e.status = :status
+          AND l.loanStatus = :loanStatus
+          AND e.dueDate = :dueDate
+        ORDER BY e.id ASC
+        """)
+    List<Emi> findEmisForOverdueEmail(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            @Param("dueDate") LocalDate dueDate
+    );
 }

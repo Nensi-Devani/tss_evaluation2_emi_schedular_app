@@ -17,7 +17,6 @@ public interface OtpRepository extends JpaRepository<OtpVerification,Long> {
     Optional<OtpVerification>
     findTopByUser_EmailAndPurposeAndVerifiedAtIsNullOrderByCreatedAtDesc(String email, OtpPurpose purpose);
 
-
     @Modifying
     @Query("""
     DELETE FROM OtpVerification o
@@ -32,4 +31,5 @@ public interface OtpRepository extends JpaRepository<OtpVerification,Long> {
       AND o.verifiedAt < :time
 """)
     long deleteByVerifiedAtIsNotNullAndVerifiedAtBefore(@Param("time") LocalDateTime time);
+    Optional<OtpVerification> findTopByUser_EmailAndPurposeAndVerifiedAtIsNullOrderByCreatedAtDesc(String email, OtpPurpose purpose);
 }
