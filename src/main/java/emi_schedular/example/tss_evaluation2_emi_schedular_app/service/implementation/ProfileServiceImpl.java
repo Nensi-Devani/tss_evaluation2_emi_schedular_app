@@ -37,7 +37,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public UserProfileResponseDto updateMyProfile(String email, UpdateUserProfileRequestDto request) {
-        User user =  userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));;
+        User user =  userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
         UserProfile profile = userProfileRepository.findByUser_Email(email).orElseGet(() -> {
                     UserProfile newProfile = new UserProfile();
                     newProfile.setUser(user);
@@ -100,7 +100,7 @@ public class ProfileServiceImpl implements ProfileService {
     private UserFinancialProfileResponseDto toFinancialResponseDto(UserFinancialProfile financialProfile) {
         return UserFinancialProfileResponseDto.builder()
                 .pan(financialProfile.getPan())
-                .aadhaar(financialProfile.getAadhar())
+                .aadhar(financialProfile.getAadhar())
                 .monthlyIncome(financialProfile.getMonthlyIncome())
                 .existingMonthlyDebt(financialProfile.getExistingMonthlyDebt())
                 .build();

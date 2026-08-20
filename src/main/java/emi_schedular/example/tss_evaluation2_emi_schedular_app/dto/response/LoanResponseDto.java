@@ -4,15 +4,13 @@ import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.LoanStatus;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.LoanStrategy;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.LoanType;
 import emi_schedular.example.tss_evaluation2_emi_schedular_app.enums.RiskLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

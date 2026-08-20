@@ -1,14 +1,14 @@
 package emi_schedular.example.tss_evaluation2_emi_schedular_app.dto.response;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserFinancialProfileResponseDto {
 
     private String pan;
