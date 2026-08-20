@@ -26,7 +26,6 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
             """)
     Page<Emi> findByLoanIdAndBorrowerEmail(@Param("loanId") Long loanId, @Param("email") String email, Pageable pageable);
 
-
     // UPCOMING EMIs
     @Query("""
             SELECT e
@@ -38,7 +37,6 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
             """)
     Page<Emi> findUpcomingEmis(@Param("loanId") Long loanId, @Param("email") String email, @Param("status") EmiStatus status, @Param("today") LocalDate today, Pageable pageable);
 
-
     // PAID EMIs
     @Query("""
             SELECT e
@@ -48,7 +46,6 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
               AND e.status = :status
             """)
     Page<Emi> findPaidEmis(@Param("loanId") Long loanId, @Param("email") String email, @Param("status") EmiStatus status, Pageable pageable);
-
 
     // OVERDUE EMIs
     @Query("""
@@ -60,7 +57,7 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
               AND e.dueDate < :today
             """)
     Page<Emi> findOverdueEmis(@Param("loanId") Long loanId, @Param("email") String email, @Param("status") EmiStatus status, @Param("today") LocalDate today, Pageable pageable);
-}
+
     Page<Emi> findByLoanId(Long loanId, Pageable pageable);
 
     @Query("""
