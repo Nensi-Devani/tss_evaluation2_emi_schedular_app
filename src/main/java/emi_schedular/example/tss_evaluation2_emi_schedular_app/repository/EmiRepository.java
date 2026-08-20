@@ -69,4 +69,36 @@ public interface EmiRepository extends JpaRepository<Emi, Long> {
     Optional<Emi> findFirstByLoanIdAndStatusAndDueDateGreaterThanEqualOrderByDueDateAsc(Long loanId, EmiStatus status, LocalDate date);
 
     Optional<Emi> findFirstByLoanIdAndStatusInOrderByInstallmentNumberAsc(Long loanId, List<EmiStatus> statuses);
+
+    @Query("""
+        SELECT e
+        FROM Emi e
+        JOIN FETCH e.loan l
+        JOIN FETCH l.borrower b
+        WHERE e.status = :status
+          AND l.loanStatus = :loanStatus
+          AND e.dueDate = :dueDate
+        ORDER BY e.id ASC
+        """)
+    List<Emi> findEmisForReminder(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            @Param("dueDate") LocalDate dueDate
+    );
+
+    @Query("""
+        SELECT e
+        FROM Emi e
+        JOIN FETCH e.loan l
+        JOIN FETCH l.borrower b
+        WHERE e.status = :status
+          AND l.loanStatus = :loanStatus
+          AND e.dueDate = :dueDate
+        ORDER BY e.id ASC
+        """)
+    List<Emi> findEmisForOverdueEmail(
+            @Param("status") EmiStatus status,
+            @Param("loanStatus") LoanStatus loanStatus,
+            @Param("dueDate") LocalDate dueDate
+    );
 }
